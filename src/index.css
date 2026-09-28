@@ -1,0 +1,361 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bg: #050505;
+  --border: rgba(255, 255, 255, 0.08);
+  --border-strong: rgba(255, 255, 255, 0.16);
+  color-scheme: dark;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+/* Guard against stray horizontal page scroll (wide grids, long mono IDs,
+ * charts): anything wider than the viewport clips instead of pushing the
+ * body wider. Inner scroll containers (tabs, consoles) still scroll. */
+html,
+body {
+  overflow-x: clip;
+  max-width: 100vw;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: #fff;
+  font-family: "Plus Jakarta Sans", system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  /* clip, not hidden: `hidden` turns <body> into a scroll container and breaks
+     page scrolling (per spec the other axis becomes auto). `clip` crops the
+     overflow without creating a scrollport, so wheel/touch scrolling stays
+     with the viewport. */
+  overflow-x: clip;
+}
+
+::selection {
+  background: #fff;
+  color: #000;
+}
+
+:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: #050505;
+}
+::-webkit-scrollbar-thumb {
+  background: #2a2a2a;
+  border-radius: 8px;
+  border: 2px solid #050505;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #3a3a3a;
+}
+
+@layer utilities {
+  .glass {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(12px);
+  }
+  .text-gradient {
+    background: linear-gradient(180deg, #ffffff 0%, #7a7a7a 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  .bg-grid {
+    background-image:
+      linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+    background-size: 56px 56px;
+  }
+  .mask-fade-b {
+    -webkit-mask-image: linear-gradient(to bottom, black 55%, transparent 100%);
+    mask-image: linear-gradient(to bottom, black 55%, transparent 100%);
+  }
+  .mask-fade-x {
+    -webkit-mask-image: linear-gradient(to right, transparent, black 12%, black 88%, transparent);
+    mask-image: linear-gradient(to right, transparent, black 12%, black 88%, transparent);
+  }
+  .shimmer-text {
+    background: linear-gradient(110deg, #3a3a3a 40%, #ffffff 50%, #3a3a3a 60%);
+    background-size: 200% 100%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    animation: shimmer 3.5s linear infinite;
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+@keyframes floaty {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.animate-floaty {
+  animation: floaty 5s ease-in-out infinite;
+}
+
+/*
+ * CSS-reveal entrances for the landing hero.
+ * Previous JS-based entrance (GSAP, then Framer Motion) left the hero stuck at
+ * opacity:0 whenever the animation library failed to run — the page looked
+ * "broken/empty". CSS animations cannot fail that way: the keyframe below
+ * always completes, so content is guaranteed to become visible.
+ */
+@layer utilities {
+  /* `backwards` (not `forwards`): the from-state covers the stagger delay, and
+     once the animation finishes NO fill is applied — so hover transforms
+     (lift/scale on cards & buttons) keep working. `forwards` pinned
+     transform:none forever and silently killed every hover effect. The
+     element is visible by default, so content can never get stuck hidden. */
+  .reveal {
+    animation: rise-in 0.7s cubic-bezier(0.16, 1, 0.3, 1) backwards;
+  }
+  .reveal-1 { animation-delay: 0.05s; }
+  .reveal-2 { animation-delay: 0.14s; }
+  .reveal-3 { animation-delay: 0.23s; }
+  .reveal-4 { animation-delay: 0.34s; }
+  .reveal-5 { animation-delay: 0.46s; }
+}
+
+@keyframes rise-in {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+}
+
+/*
+ * Route transition for the dashboard shell.
+ * Same principle as .reveal: a CSS keyframe cannot get stuck, so pages can
+ * never end up invisible even if JS hiccups mid-render.
+ */
+@keyframes route-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.route-fade {
+  animation: route-in 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Staggered card entrance for dashboard grids. Applied with an inline
+ * animation-delay; same "backwards fill" safety as .reveal. */
+@keyframes card-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.985);
+  }
+}
+
+.card-in {
+  animation: card-in 0.5s cubic-bezier(0.16, 1, 0.3, 1) backwards;
+}
+
+/* ------------------------------ admin panel ------------------------------- */
+/* Admin instruments share the main site's monochrome language: ink surfaces,
+ * pure white accents, no separate color palette. The old teal instrument-panel
+ * theme was removed together with its (now unused) workspace chrome classes. */
+
+/* Login screen framing (used by /admin/login). */
+.admin-login::before {
+  content: "";
+  position: absolute;
+  inset: 22px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 24px;
+  pointer-events: none;
+}
+.admin-login-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 12%;
+  right: 12%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.85), transparent);
+  box-shadow: 0 0 24px rgba(255, 255, 255, 0.3);
+}
+.admin-login-card::after {
+  content: "";
+  position: absolute;
+  width: 180px;
+  height: 180px;
+  right: -100px;
+  top: -100px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.07);
+  filter: blur(35px);
+  pointer-events: none;
+}
+
+.admin-command-nav { border-style: dashed !important; }
+.admin-workspace .adm-command-nav { box-shadow: inset 0 0 45px rgba(255, 255, 255, 0.03); }
+
+/* Admin KPI tiles: magnetic lift + a white underline sweep on hover. */
+.admin-kpi {
+  position: relative;
+  overflow: hidden;
+  transition: transform .25s ease, border-color .25s ease, background-color .25s ease;
+}
+.admin-kpi::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  height: 1px;
+  width: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.55), transparent);
+  opacity: 0;
+  transition: opacity .25s ease;
+}
+.admin-kpi:hover { transform: translateY(-2px); border-color: rgba(255, 255, 255, 0.25); background-color: rgba(255, 255, 255, 0.05); }
+.admin-kpi:hover::after { opacity: 1; }
+.admin-command-nav { border-style: dashed !important; }
+.adm-panel {
+  position: relative;
+  border-radius: 1.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background:
+    radial-gradient(130% 120% at 0% 0%, rgba(255, 255, 255, 0.07), transparent 46%),
+    linear-gradient(180deg, #141414 0%, #0b0b0b 100%);
+  box-shadow: 0 20px 50px -34px rgba(0, 0, 0, 0.95), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  transition: border-color 0.25s ease, box-shadow 0.25s ease;
+}
+.adm-panel::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(115deg, transparent 35%, rgba(255, 255, 255, 0.045) 50%, transparent 65%);
+  background-size: 250% 100%;
+  background-position: 140% 0;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease, background-position 0.9s ease;
+}
+.adm-panel:hover {
+  border-color: rgba(255, 255, 255, 0.2);
+  box-shadow: 0 30px 64px -34px rgba(0, 0, 0, 1), inset 0 1px 0 rgba(255, 255, 255, 0.07);
+}
+.adm-panel:hover::after {
+  opacity: 1;
+  background-position: -60% 0;
+}
+
+/* Command-deck header of the admin panel. */
+.adm-deck {
+  position: relative;
+  overflow: hidden;
+  border-radius: 2rem;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background:
+    radial-gradient(90% 130% at 8% 0%, rgba(255, 255, 255, 0.11), transparent 55%),
+    linear-gradient(180deg, #161616 0%, #080808 100%);
+  box-shadow: 0 30px 70px -40px rgba(0, 0, 0, 1), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+@keyframes adm-scan {
+  0% { transform: translateY(-110%); opacity: 0; }
+  35% { opacity: 0.7; }
+  100% { transform: translateY(320%); opacity: 0; }
+}
+.adm-scan {
+  animation: adm-scan 6.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Tab pills in the redesigned admin navigation. */
+.adm-tab {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  border-radius: 0.75rem;
+  padding: 0.4rem 0.7rem;
+  font-size: 0.7rem;
+  font-weight: 700;
+  white-space: nowrap;
+  transition: color 0.2s ease, background-color 0.2s ease;
+}
+
+/* Magnetic hover lift used on dashboard panels — pure CSS so it never fights
+ * entrance animations and works even before the entrance finishes. */
+.lift {
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.25s, box-shadow 0.25s;
+}
+.lift:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 32px -16px rgba(0, 0, 0, 0.8);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card-in,
+  .lift {
+    animation: none;
+    transition: none;
+  }
+  .lift:hover {
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .route-fade,
+  .reveal {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal {
+    opacity: 1;
+    transform: none;
+    animation: none !important;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

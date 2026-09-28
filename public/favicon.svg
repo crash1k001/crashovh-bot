@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#1a1a1e"/>
+      <stop offset="100%" stop-color="#0a0a0c"/>
+    </linearGradient>
+  </defs>
+  <rect width="64" height="64" rx="14" fill="url(#bg)"/>
+  <rect x="0.5" y="0.5" width="63" height="63" rx="13.5" fill="none" stroke="rgba(255,255,255,0.25)"/>
+  <!-- Niko: white imp-girl silhouette (horns + face) drawn in strokes -->
+  <g stroke="#ffffff" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round" fill="none">
+    <!-- left horn -->
+    <path d="M20 22 C15 17 13 11 15 6 C20 9 23 13 24 18"/>
+    <!-- right horn -->
+    <path d="M44 22 C49 17 51 11 49 6 C44 9 41 13 40 18"/>
+    <!-- head -->
+    <path d="M22 20 C22 14 27 11 32 11 C37 11 42 14 42 20 C42 26 38 30 32 30 C26 30 22 26 22 20 Z"/>
+    <!-- eyes -->
+    <path d="M26 21 L29 21" stroke-width="4"/>
+    <path d="M35 21 L38 21" stroke-width="4"/>
+    <!-- little smile -->
+    <path d="M30 25.5 Q32 27 34 25.5" stroke-width="2.4"/>
+    <!-- bat wings -->
+    <path d="M21 44 C13 42 8 36 9 30 C13 33 16 34 19 34 C17 38 18 42 21 44 Z" fill="rgba(255,255,255,0.14)"/>
+    <path d="M43 44 C51 42 56 36 55 30 C51 33 48 34 45 34 C47 38 46 42 43 44 Z" fill="rgba(255,255,255,0.14)"/>
+    <!-- body hint -->
+    <path d="M24 44 C24 37 27 34 32 34 C37 34 40 37 40 44"/>
+  </g>
+  <!-- tail flame -->
+  <path d="M46 50 C49 48 50 45 49 42 C52 44 53 47 51 50 C49 52 47 52 46 50 Z" fill="#ffffff" opacity="0.85"/>
+</svg>

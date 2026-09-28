@@ -1,0 +1,70 @@
+
+const {
+  ContainerBuilder,
+  TextDisplayBuilder,
+  SeparatorBuilder,
+  SeparatorSpacingSize,
+  MessageFlags,
+  PermissionFlagsBits
+} = require('discord.js');
+const { getAllBypassUsers } = require('../../../../data/ignoreDb');
+
+module.exports = {
+  async execute(interaction) {
+    if (!interaction.member.permissions.has(PermissionFlagsBits.Administrator)) {
+      const container = new ContainerBuilder().setAccentColor(0x2B2D31)
+        .addTextDisplayComponents(
+          new TextDisplayBuilder().setContent(`**Отказано в доступе**`)
+        )
+        .addSeparatorComponents(
+          new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small).setDivider(true)
+        )
+        .addTextDisplayComponents(
+          new TextDisplayBuilder().setContent('Вам нужно право Администратор, чтобы использовать эту команду.')
+        );
+      
+      return interaction.reply({
+        components: [container],
+        flags: MessageFlags.IsComponentsV2 | MessageFlags.Ephemeral
+      });
+    }
+
+    const users = getAllBypassUsers(interaction.guild.id);
+
+    if (!users || users.length === 0) {
+      const container = new ContainerBuilder().setAccentColor(0x2B2D31)
+        .addTextDisplayComponents(
+          new TextDisplayBuilder().setContent(`**Пользователи в списке исключений**`)
+        )
+        .addSeparatorComponents(
+          new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small).setDivider(true)
+        )
+        .addTextDisplayComponents(
+          new TextDisplayBuilder().setContent('На этом сервере сейчас нет пользователей в списке исключений.')
+        );
+      
+      return interaction.reply({
+        components: [container],
+        flags: MessageFlags.IsComponentsV2
+      });
+    }
+
+    const userList = users.map(u => `<@${u.user_id}>`).join('\n');
+
+    const container = new ContainerBuilder().setAccentColor(0x2B2D31);
+    container.addTextDisplayComponents(
+      new TextDisplayBuilder().setContent(`**Пользователи в списке исключений**`)
+    );
+    container.addSeparatorComponents(
+      new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small).setDivider(true)
+    );
+    container.addTextDisplayComponents(
+      new TextDisplayBuilder().setContent(userList)
+    );
+
+    await interaction.reply({
+      components: [container],
+      flags: MessageFlags.IsComponentsV2
+    });
+  }
+};
